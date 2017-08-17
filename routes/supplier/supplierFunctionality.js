@@ -202,7 +202,7 @@ exports.updateSupplier = function(req, callback) {
                     "message": "Db error !"
                 };
                 return callback(false, resJson);
-            }if (!results.length) {
+            }if (!result.length) {
                 resJson = {
                   "http_code": "404",
                   "message": "supplier data not found"

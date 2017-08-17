@@ -1,7 +1,7 @@
 var TAG = 'Customer.js';
 var dbConfig = require('../../Environment/mongoDatabase.js');
-var supplierInput = require('./config/inputConfig.js');
-var supplierConstant = require('./config/constant.js');
+var customerInput = require('./config/inputConfig.js');
+var customerConstant = require('./config/constant.js');
 
 exports.registerCustomer = function(req, callback) {
     try {
@@ -15,7 +15,7 @@ exports.registerCustomer = function(req, callback) {
         }
 
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.registerCustomer();
+        var input = new customerInput.registerCustomer();
         input.firstName = req.body.firstName;
         input.lastName = req.body.lastName;
         input.mobile = req.body.mobile;
@@ -23,9 +23,9 @@ exports.registerCustomer = function(req, callback) {
         input.address = req.body.address;
         input.userType = req.body.userType;
        
-        var supplierColl = db.collection(supplierConstant.supplierDbName);
+        var customerColl = db.collection(customerConstant.customerDbName);
 
-        supplierColl.insert(input, function(err, results) {
+        customerColl.insert(input, function(err, results) {
             if (err) {
                 if (err.code == 11000) {
                     resJson = {
@@ -43,7 +43,7 @@ exports.registerCustomer = function(req, callback) {
             } else {
                 resJson = {
                     "http_code": "200",
-                    "message": "supplier Registerd successfully"
+                    "message": "customer Registerd successfully"
                 };
                 return callback(false, resJson);
             }
@@ -51,13 +51,13 @@ exports.registerCustomer = function(req, callback) {
     } catch (e) {
         resJson = {
             "http_code": "500",
-            "message": "Error retriving supplier details." + e.message
+            "message": "Error retriving customer details." + e.message
         };
         return callback(e, resJson);
     }
 }
 
-exports.viewSupplier = function(req, callback) {
+exports.viewCustomer = function(req, callback) {
     try {
         if (!req.body.mobile || req.body.mobile == undefined ) {
             resJson = {
@@ -68,11 +68,11 @@ exports.viewSupplier = function(req, callback) {
         }
 
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.viewSupplier();
+        var input = new customerInput.viewCustomer();
         input.mobile = req.body.mobile;
-        var supplierColl = db.collection(supplierConstant.supplierDbName);
+        var customerColl = db.collection(customerConstant.customerDbName);
      
-        supplierColl.find({"mobile":input.mobile}).toArray (function(err, result) {
+        customerColl.find({"mobile":input.mobile}).toArray (function(err, result) {
             if (err) {
                 resJson = {
                     "http_code": "500",
@@ -83,7 +83,7 @@ exports.viewSupplier = function(req, callback) {
             if (!result.length) {
                 resJson = {
                   "http_code": "404",
-                  "message": "supplier data not found"
+                  "message": "customer data not found"
                 };
                 return callback(false, resJson);
              }else {
@@ -97,14 +97,14 @@ exports.viewSupplier = function(req, callback) {
     } catch (e) {
         resJson = {
             "http_code": "500",
-            "message": "Error retriving supplier details." + e.message
+            "message": "Error retriving customer details." + e.message
         };
         return callback(e, resJson);
     }
 }
 
 
-exports.removeSupplier = function(req, callback) {
+exports.removeCustomer = function(req, callback) {
     try {
         if (!req.body.mobile || req.body.mobile == undefined ) {
             resJson = {
@@ -115,12 +115,12 @@ exports.removeSupplier = function(req, callback) {
         }
 
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.viewSupplier();
+        var input = new customerInput.viewCustomer();
         input.mobile = req.body.mobile;
        
-        var supplierColl = db.collection(supplierConstant.supplierDbName);
+        var customerColl = db.collection(customerConstant.customerDbName);
 
-        supplierColl.remove(input,1, function(err, results) {
+        customerColl.remove(input,1, function(err, results) {
             if (err) {
                 resJson = {
                     "http_code": "500",
@@ -130,7 +130,7 @@ exports.removeSupplier = function(req, callback) {
             } else {
                 resJson = {
                     "http_code": "200",
-                    "message": "supplier removed successfully"
+                    "message": "customer removed successfully"
                 };
                 return callback(false, resJson);
             }
@@ -138,16 +138,16 @@ exports.removeSupplier = function(req, callback) {
     } catch (e) {
         resJson = {
             "http_code": "500",
-            "message": "Error retriving supplier details." + e.message
+            "message": "Error retriving customer details." + e.message
         };
         return callback(e, resJson);
     }
 }
 
-exports.updateSupplier = function(req, callback) {
+exports.updateCustomer = function(req, callback) {
     try {
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.viewSupplier();
+        var input = new customerInput.viewCustomer();
         input.mobile = req.body.mobile;
         
         var querobj = {};
@@ -187,9 +187,9 @@ exports.updateSupplier = function(req, callback) {
             updateObj["userType"] = req.body.userType;
         }
        
-        var supplierColl = db.collection(supplierConstant.supplierDbName);
+        var customerColl = db.collection(customerConstant.customerDbName);
 
-        supplierColl.update(querobj,{ $set : updateObj}, function(err, result) {
+        customerColl.update(querobj,{ $set : updateObj}, function(err, result) {
             if (err) {
                 resJson = {
                     "http_code": "500",
@@ -199,7 +199,7 @@ exports.updateSupplier = function(req, callback) {
             } else {
                 resJson = {
                     "http_code": "200",
-                    "message": "supplier details updated successfully"
+                    "message": "customer details updated successfully"
                 };
                 return callback(false, resJson);
             }
@@ -207,7 +207,7 @@ exports.updateSupplier = function(req, callback) {
     } catch (e) {
         resJson = {
             "http_code": "500",
-            "message": "Error retriving supplier details." + e.message
+            "message": "Error retriving customer details." + e.message
         };
         return callback(e, resJson);
     }
