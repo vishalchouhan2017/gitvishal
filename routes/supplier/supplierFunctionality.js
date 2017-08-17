@@ -1,9 +1,9 @@
-var TAG = 'Customer.js';
+var TAG = 'Supplier.js';
 var dbConfig = require('../../Environment/mongoDatabase.js');
 var supplierInput = require('./config/inputConfig.js');
 var supplierConstant = require('./config/constant.js');
 
-exports.registerCustomer = function(req, callback) {
+exports.registerSupplier = function(req, callback) {
     try {
 
         if (!req.body.mobile || req.body.mobile == undefined || !req.body.email || req.body.email == undefined) {
@@ -15,7 +15,7 @@ exports.registerCustomer = function(req, callback) {
         }
 
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.registerCustomer();
+        var input = new supplierInput.registerSupplier();
         input.firstName = req.body.firstName;
         input.lastName = req.body.lastName;
         input.mobile = req.body.mobile;
@@ -113,7 +113,7 @@ exports.removeSupplier = function(req, callback) {
             };
             return callback(false, resJson);
         }
-
+        
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.viewSupplier();
         input.mobile = req.body.mobile;
@@ -127,7 +127,13 @@ exports.removeSupplier = function(req, callback) {
                     "message": "Db error !"
                 };
                 return callback(false, resJson);
-            } else {
+            }if (!results.length) {
+                resJson = {
+                  "http_code": "404",
+                  "message": "supplier data not found"
+                };
+                return callback(false, resJson);
+             } else {
                 resJson = {
                     "http_code": "200",
                     "message": "supplier removed successfully"
@@ -196,7 +202,13 @@ exports.updateSupplier = function(req, callback) {
                     "message": "Db error !"
                 };
                 return callback(false, resJson);
-            } else {
+            }if (!results.length) {
+                resJson = {
+                  "http_code": "404",
+                  "message": "supplier data not found"
+                };
+                return callback(false, resJson);
+             } else {
                 resJson = {
                     "http_code": "200",
                     "message": "supplier details updated successfully"
