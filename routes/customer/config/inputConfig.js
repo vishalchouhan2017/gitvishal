@@ -4,4 +4,9 @@ exports.registerCustomer = function () {
     this.mobile = "";
     this.email = "";
     this.address = "";
+    this.userType = "";
+  };
+
+  exports.viewCustomer = function () {
+    this.mobile = "";
   };
