@@ -2,6 +2,7 @@ exports.registerCustomer = function () {
     this.firstName = "";
     this.lastName = "";
     this.mobile = "";
+    this.password = "";
     this.email = "";
     this.address = "";
     this.userType = "";
@@ -9,4 +10,5 @@ exports.registerCustomer = function () {
 
   exports.viewCustomer = function () {
     this.mobile = "";
+    this.password = "";
   };

@@ -1,5 +1,6 @@
 var TAG = 'Supplier.js';
 var dbConfig = require('../../Environment/mongoDatabase.js');
+var crypto = require('crypto');
 var supplierInput = require('./config/inputConfig.js');
 var supplierConstant = require('./config/constant.js');
 
@@ -13,6 +14,7 @@ exports.registerSupplier = function(req, callback) {
             };
             return callback(false, resJson);
         }
+        var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
 
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.registerSupplier();
@@ -22,7 +24,8 @@ exports.registerSupplier = function(req, callback) {
         input.email = req.body.email;
         input.address = req.body.address;
         input.userType = req.body.userType;
-       
+        input.password = passwordHash;
+
         var supplierColl = db.collection(supplierConstant.supplierDbName);
 
         supplierColl.insert(input, function(err, results) {
@@ -66,13 +69,23 @@ exports.viewSupplier = function(req, callback) {
             };
             return callback(false, resJson);
         }
+        if (!req.body.password || req.body.password == undefined ) {
+            resJson = {
+                "http_code": "500",
+                "message": "password  mandatory"
+            };
+            return callback(false, resJson);
+        }
+
+        var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex')
 
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.viewSupplier();
         input.mobile = req.body.mobile;
+        input.password = passwordHash;
         var supplierColl = db.collection(supplierConstant.supplierDbName);
      
-        supplierColl.find({"mobile":input.mobile}).toArray (function(err, result) {
+        supplierColl.find({"mobile":input.mobile,"password":input.password}).toArray (function(err, result) {
             if (err) {
                 resJson = {
                     "http_code": "500",
@@ -83,7 +96,7 @@ exports.viewSupplier = function(req, callback) {
             if (!result.length) {
                 resJson = {
                   "http_code": "404",
-                  "message": "supplier data not found"
+                  "message": "mobile number and password not match"
                 };
                 return callback(false, resJson);
              }else {
