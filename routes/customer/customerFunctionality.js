@@ -17,40 +17,59 @@ exports.registerCustomer = function(req, callback) {
         var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
        
         var db = dbConfig.mongoDbConn;
-        var input = new customerInput.registerCustomer();
-        input.firstName = req.body.firstName;
-        input.lastName = req.body.lastName;
-        input.mobile = req.body.mobile;
-        input.email = req.body.email;
-        input.address = req.body.address;
-        input.userType = req.body.userType;
-        input.password = passwordHash;
-       
         var customerColl = db.collection(customerConstant.customerDbName);
+        var countersCol = db.collection(customerConstant.counterDbName);
 
-        customerColl.insert(input, function(err, results) {
+        countersCol.findAndModify({ _id: 'userId' },null, { $inc: { seq: 1 } }, {new: true}, function(err, result){
             if (err) {
-                if (err.code == 11000) {
-                    resJson = {
-                        "http_code": "500",
-                        "message": "mobile/email already registerd"
-                    };
-                    return callback(false, resJson);
-                }else{
-                    resJson = {
-                        "http_code": "500",
-                        "message": "Db error !"
-                    };
-                    return callback(false, resJson);
-                }
-            } else {
                 resJson = {
-                    "http_code": "200",
-                    "message": "customer Registerd successfully"
+                    "http_code": "500",
+                    "message": "DB eroor"
                 };
                 return callback(false, resJson);
+            } else {
+                
+               var input = new customerInput.registerCustomer();
+               input.userId = result.value.seq;
+               input.date = new Date();
+               input.firstName = req.body.firstName;
+               input.lastName = req.body.lastName;
+               input.mobile = req.body.mobile;
+               input.email = req.body.email;
+               input.address = req.body.address;
+               input.userType = req.body.userType;
+               input.password = passwordHash;
+                           
+       
+               customerColl.insert(input, function(err, results) {
+                   if (err) {
+                       if (err.code == 11000) {
+                           resJson = {
+                               "http_code": "500",
+                               "message": "mobile/email already registerd"
+                           };
+                           return callback(false, resJson);
+                       }else{
+                           resJson = {
+                               "http_code": "500",
+                               "message": "Db error !"
+                           };
+                           return callback(false, resJson);
+                       }
+                   } else {
+                       resJson = {
+                           "http_code": "200",
+                           "message": "customer Registerd successfully"
+                       };
+                       return callback(false, resJson);
+                   }
+               });
             }
         });
+
+
+
+       
     } catch (e) {
         resJson = {
             "http_code": "500",

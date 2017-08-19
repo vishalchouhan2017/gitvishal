@@ -17,41 +17,59 @@ exports.registerSupplier = function(req, callback) {
         var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
 
         var db = dbConfig.mongoDbConn;
-        var input = new supplierInput.registerSupplier();
-        input.firstName = req.body.firstName;
-        input.lastName = req.body.lastName;
-        input.mobile = req.body.mobile;
-        input.email = req.body.email;
-        input.address = req.body.address;
-        input.userType = req.body.userType;
-        input.password = passwordHash;
-
         var supplierColl = db.collection(supplierConstant.supplierDbName);
+        var countersCol = db.collection(supplierConstant.counterDbName);
 
-        supplierColl.insert(input, function(err, results) {
+        countersCol.findAndModify({ _id: 'sellerId' },null, { $inc: { seq: 1 } }, {new: true}, function(err, result){
             if (err) {
-                if (err.code == 11000) {
-                    resJson = {
-                        "http_code": "500",
-                        "message": "mobile/email already registerd"
-                    };
-                    return callback(false, resJson);
-                }else{
-                    resJson = {
-                        "http_code": "500",
-                        "message": "Db error !"
-                    };
-                    return callback(false, resJson);
-                }
-            } else {
                 resJson = {
-                    "http_code": "200",
-                    "message": "supplier Registerd successfully"
+                    "http_code": "500",
+                    "message": "DB eroor"
                 };
                 return callback(false, resJson);
+            } else {
+
+                var input = new supplierInput.registerSupplier();
+                input.sellerId = result.value.seq;
+                input.date = new Date();
+                input.firstName = req.body.firstName;
+                input.lastName = req.body.lastName;
+                input.mobile = req.body.mobile;
+                input.email = req.body.email;
+                input.address = req.body.address;
+                input.userType = req.body.userType;
+                input.password = passwordHash;
+        
+                
+        
+                supplierColl.insert(input, function(err, results) {
+                    if (err) {
+                        if (err.code == 11000) {
+                            resJson = {
+                                "http_code": "500",
+                                "message": "mobile/email already registerd"
+                            };
+                            return callback(false, resJson);
+                        }else{
+                            resJson = {
+                                "http_code": "500",
+                                "message": "Db error !"
+                            };
+                            return callback(false, resJson);
+                        }
+                    } else {
+                        resJson = {
+                            "http_code": "200",
+                            "message": "supplier Registerd successfully"
+                        };
+                        return callback(false, resJson);
+                    }
+                });
+
             }
         });
-    } catch (e) {
+
+       } catch (e) {
         resJson = {
             "http_code": "500",
             "message": "Error retriving supplier details." + e.message

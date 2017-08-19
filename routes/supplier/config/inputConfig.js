@@ -1,4 +1,6 @@
 exports.registerSupplier = function () {
+    this.sellerId = 0;
+    this.date = "";
     this.firstName = "";
     this.lastName = "";
     this.mobile = "";
