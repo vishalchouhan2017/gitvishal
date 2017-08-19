@@ -226,3 +226,57 @@ exports.updateCustomer = function(req, callback) {
         return callback(e, resJson);
     }
 }
+
+exports.updatePassword = function(req, callback) {
+    try {
+        if (!req.body.mobile || req.body.mobile == undefined 
+            ||!req.body.password || req.body.password == undefined  ) {
+            resJson = {
+                "http_code": "500",
+                "message": "mobile/password number mandatory"
+            };
+            return callback(false, resJson);
+        }
+        var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
+        
+        var db = dbConfig.mongoDbConn;
+        var input = new customerInput.viewCustomer();
+        input.mobile = req.body.mobile;
+        input.password = passwordHash;
+        
+        var querobj = {};
+        querobj["mobile"] = input.mobile;
+
+        var updateObj = {};
+      
+        if(req.body.password != req.body.password){
+           updateObj["password"] = req.body.password;
+        }
+        console.log(JSON.stringify(querobj));
+        console.log(JSON.stringify(updateObj));
+       
+        var customerColl = db.collection(customerConstant.customerDbName);
+
+        customerColl.update(querobj,{ $set : updateObj}, function(err, result) {
+            if (err) {
+                resJson = {
+                    "http_code": "500",
+                    "message": "Db error !"
+                };
+                return callback(false, resJson);
+            } else {
+                resJson = {
+                    "http_code": "200",
+                    "message": "password updated successfully"
+                };
+                return callback(false, resJson);
+            }
+        });
+    } catch (e) {
+        resJson = {
+            "http_code": "500",
+            "message": "Error retriving customer details." + e.message
+        };
+        return callback(e, resJson);
+    }
+}

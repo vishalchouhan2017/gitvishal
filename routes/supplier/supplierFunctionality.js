@@ -237,3 +237,55 @@ exports.updateSupplier = function(req, callback) {
         return callback(e, resJson);
     }
 }
+
+exports.updatePassword = function(req, callback) {
+    try {
+        if (!req.body.mobile || req.body.mobile == undefined 
+            ||!req.body.password || req.body.password == undefined  ) {
+            resJson = {
+                "http_code": "500",
+                "message": "mobile/password number mandatory"
+            };
+            return callback(false, resJson);
+        }
+        var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
+        
+        var db = dbConfig.mongoDbConn;
+        var input = new supplierInput.viewSupplier();
+        input.mobile = req.body.mobile;
+        input.password = passwordHash;
+        
+        var querobj = {};
+        querobj["mobile"] = input.mobile;
+
+        var updateObj = {};
+      
+        if(req.body.password != req.body.password){
+           updateObj["password"] = req.body.password;
+        }
+       
+        var supplierColl = db.collection(supplierConstant.supplierDbName);
+
+        supplierColl.update(querobj,{ $set : updateObj}, function(err, result) {
+            if (err) {
+                resJson = {
+                    "http_code": "500",
+                    "message": "Db error !"
+                };
+                return callback(false, resJson);
+            } else {
+                resJson = {
+                    "http_code": "200",
+                    "message": "password updated successfully"
+                };
+                return callback(false, resJson);
+            }
+        });
+    } catch (e) {
+        resJson = {
+            "http_code": "500",
+            "message": "Error retriving supplier details." + e.message
+        };
+        return callback(e, resJson);
+    }
+}

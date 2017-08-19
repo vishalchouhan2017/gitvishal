@@ -35,6 +35,15 @@ app.post('/api/v1.0/updateCustomer', function (req, res) {
   customer.updateCustomer(req, callback);
 });
 
+app.post('/api/v1.0/updatePassword', function (req, res) {
+  var callback = function (err, regres) {
+    res.statusCode = regres.http_code;
+    res.json(regres);
+};
+customer.updatePassword(req, callback);
+});
+
+
 
 
 
