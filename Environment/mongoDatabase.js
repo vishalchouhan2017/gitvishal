@@ -38,12 +38,8 @@ var dbConnUrl = null;
 var dbConnUrlSecondary = null;
 if (!( connParams.user === "" && connParams.pwd === "")) {
 dbConnUrl = 'mongodb://' + connParams.user + ':' + connParams.pwd + '@' + hosts + '/' + connParams.database;
-dbConnUrlSecondary = 'mongodb://' + connParams.user + ':' + connParams.pwd + '@' + hosts + '/' + connParams.database + '?readPreference=secondaryPreferred';
-// dbConnUrl = 'mongodb://' + connParams.user + ':' + connParams.pwd + '@' + hosts + '/' + connParams.database + '?replicaSet=msupply&connectTimeoutMS=300000&socketTimeoutMS=300000';
-console.log(dbConnUrl);
 } else {
 dbConnUrl = 'mongodb://' + hosts + '/' + connParams.database ;
-dbConnUrlSecondary = 'mongodb://' + hosts + '/' + connParams.database  + '?readPreference=secondaryPreferred';
 }
 
 
