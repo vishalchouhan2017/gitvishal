@@ -39,9 +39,9 @@ exports.registerSupplier = function(req, callback) {
                 input.address = req.body.address;
                 input.userType = req.body.userType;
                 input.password = passwordHash;
-        
-                
-        
+
+
+
                 supplierColl.insert(input, function(err, results) {
                     if (err) {
                         if (err.code == 11000) {
@@ -102,7 +102,7 @@ exports.viewSupplier = function(req, callback) {
         input.mobile = req.body.mobile;
         input.password = passwordHash;
         var supplierColl = db.collection(supplierConstant.supplierDbName);
-     
+
         supplierColl.find({"mobile":input.mobile,"password":input.password}).toArray (function(err, result) {
             if (err) {
                 resJson = {
@@ -110,7 +110,7 @@ exports.viewSupplier = function(req, callback) {
                     "message": "Db error !"
                 };
                 return callback(false, resJson);
-            } 
+            }
             if (!result.length) {
                 resJson = {
                   "http_code": "404",
@@ -144,11 +144,11 @@ exports.removeSupplier = function(req, callback) {
             };
             return callback(false, resJson);
         }
-        
+
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.viewSupplier();
         input.mobile = req.body.mobile;
-       
+
         var supplierColl = db.collection(supplierConstant.supplierDbName);
 
         supplierColl.remove(input,1, function(err, results) {
@@ -186,12 +186,12 @@ exports.updateSupplier = function(req, callback) {
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.viewSupplier();
         input.mobile = req.body.mobile;
-        
+
         var querobj = {};
         querobj["mobile"] = input.mobile;
 
         var updateObj = {};
-      
+
         if(req.body.firstName != req.body.newFirstName){
            updateObj["firstName"] = req.body.newFirstName;
         }else
@@ -223,7 +223,7 @@ exports.updateSupplier = function(req, callback) {
         }else{
             updateObj["userType"] = req.body.userType;
         }
-       
+
         var supplierColl = db.collection(supplierConstant.supplierDbName);
 
         supplierColl.update(querobj,{ $set : updateObj}, function(err, result) {
@@ -258,7 +258,7 @@ exports.updateSupplier = function(req, callback) {
 
 exports.updatePassword = function(req, callback) {
     try {
-        if (!req.body.mobile || req.body.mobile == undefined 
+        if (!req.body.mobile || req.body.mobile == undefined
             ||!req.body.password || req.body.password == undefined  ) {
             resJson = {
                 "http_code": "500",
@@ -267,21 +267,21 @@ exports.updatePassword = function(req, callback) {
             return callback(false, resJson);
         }
         var passwordHash = crypto.createHash('md5').update(req.body.password).digest('hex');
-        
+
         var db = dbConfig.mongoDbConn;
         var input = new supplierInput.viewSupplier();
         input.mobile = req.body.mobile;
         input.password = passwordHash;
-        
+
         var querobj = {};
         querobj["mobile"] = input.mobile;
 
         var updateObj = {};
-      
+
         if(req.body.password != req.body.password){
            updateObj["password"] = req.body.password;
         }
-       
+
         var supplierColl = db.collection(supplierConstant.supplierDbName);
 
         supplierColl.update(querobj,{ $set : updateObj}, function(err, result) {
@@ -306,4 +306,12 @@ exports.updatePassword = function(req, callback) {
         };
         return callback(e, resJson);
     }
+}
+
+exports.mukesh = function(req, callback){
+  resJson= {
+    http_code : "200",
+    "message":"routing called"
+  }
+  callback(true,resJson);
 }
